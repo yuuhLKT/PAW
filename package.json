@@ -1,15 +1,25 @@
 {
+  "name": "paw",
+  "version": "1.0.0",
+  "description": "",
   "scripts": {
-    "docker:up": "docker compose up -d",
-    "dev": "npm run docker:up && concurrently \"nodemon backend/server.js\" \"cd frontend && ng serve\"",
-    "start": "npm run docker:up && concurrently \"node backend/server.js\" \"cd frontend && ng serve\""
+    "start": "npm run docker:up && npm run install-deps && concurrently \"node backend/server.js\" \"cd frontend && ng serve\"",
+    "dev": "npm run docker:up && npm run install-deps && concurrently \"nodemon backend/server.js\" \"cd frontend && ng serve\"",
+    "install-deps": "cd frontend && npm install",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
+    "concurrently": "^8.2.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "express-fileupload": "^1.5.1",
-    "mongoose": "^8.13.2",
-    "nodemon": "^3.1.10",
-    "concurrently": "^8.2.2"
+    "express": "^4.18.3",
+    "express-fileupload": "^1.4.3",
+    "mongoose": "^8.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
   }
 }
