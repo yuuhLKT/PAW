@@ -1,0 +1,29 @@
+<div class="message-container">
+  <div class="message-header">
+    <h2>Messages</h2>
+    <button (click)="logout()" class="logout-button">Logout</button>
+  </div>
+
+  <div class="message-list">
+    <div *ngFor="let message of messages" class="message-item">
+      <div class="message-user">
+        <img [src]="message.user.imageUrl" [alt]="message.user.username" class="user-avatar">
+        <span class="user-name">{{ message.user.username }}</span>
+      </div>
+      <div class="message-content">
+        <p>{{ message.content }}</p>
+        <span class="message-time">{{ message.timestamp | date:'short' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="message-input">
+    <input
+      type="text"
+      [(ngModel)]="newMessage"
+      placeholder="Type your message..."
+      (keyup.enter)="sendMessage()"
+    >
+    <button (click)="sendMessage()">Enviar</button>
+  </div>
+</div>
