@@ -50,7 +50,13 @@ Base URL: http://localhost:3000
   - Success (200): 
 ```json
 {
-  "message": "Usuário habilitado a logar"
+  "message": "Usuário habilitado a logar",
+  "user": {
+    "_id": "string",
+    "nome": "string",
+    "email": "string",
+    "imagem": "string"
+  }
 }
 ```
   - Error (401): 
