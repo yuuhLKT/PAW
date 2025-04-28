@@ -31,6 +31,12 @@ function userRouter() {
             if (user){
                 res.status(200).json({
                     message: 'Usuário habilitado a logar',
+                    user: {
+                        _id: user._id,
+                        nome: user.nome,
+                        email: user.email,
+                        imagem: user.imagem || '/images/padrao.png'
+                    }
                 });
             } else {
                 res.status(401).json({ error: 'Credenciais inválidas' });
