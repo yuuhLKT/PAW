@@ -12,6 +12,27 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-info .user-name {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
 }
 
 .logout-button {

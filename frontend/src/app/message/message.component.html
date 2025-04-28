@@ -1,6 +1,9 @@
 <div class="message-container">
   <div class="message-header">
-    <h2>Messages</h2>
+    <div class="user-info">
+      <img [src]="currentUser?.imagem || '/images/padrao.png'" [alt]="currentUser?.nome" class="user-avatar">
+      <span class="user-name">{{ currentUser?.nome }}</span>
+    </div>
     <button (click)="logout()" class="logout-button">Logout</button>
   </div>
 

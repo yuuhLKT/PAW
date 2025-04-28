@@ -1,7 +1,7 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 interface Message {
   id: number;
@@ -14,6 +14,14 @@ interface Message {
   };
 }
 
+interface User {
+  _id: string;
+  nome: string;
+  email: string;
+  senha: string;
+  imagem: string;
+}
+
 @Component({
   selector: 'app-message',
   standalone: true,
@@ -21,9 +29,26 @@ interface Message {
   templateUrl: './message.component.html',
   styleUrl: './message.component.css'
 })
-export class MessageComponent {
+export class MessageComponent implements OnInit {
   messages: Message[] = [];
   newMessage: string = '';
+  currentUser: User | null = null;
+
+  constructor(
+    private router: Router,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) { }
+
+  ngOnInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      const userData = localStorage.getItem('currentUser');
+      if (userData) {
+        this.currentUser = JSON.parse(userData);
+      } else {
+        this.router.navigate(['/login']);
+      }
+    }
+  }
 
   sendMessage() {
     if (this.newMessage.trim()) {
@@ -32,6 +57,9 @@ export class MessageComponent {
   }
 
   logout() {
-    console.log('Logout clicked');
+    if (isPlatformBrowser(this.platformId)) {
+      localStorage.removeItem('currentUser');
+    }
+    this.router.navigate(['/login']);
   }
 }
