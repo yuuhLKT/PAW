@@ -35,6 +35,31 @@ Base URL: http://localhost:3000
 ```
 - **Response:** Created user object
 
+### Login User
+- **URL:** `/api/usuarios/login`
+- **Method:** POST
+- **Description:** Authenticates a user with email and password
+- **Request Body:**
+```json
+{
+  "email": "string",
+  "senha": "string"
+}
+```
+- **Response:** 
+  - Success (200): 
+```json
+{
+  "message": "Usuário habilitado a logar"
+}
+```
+  - Error (401): 
+```json
+{
+  "error": "Credenciais inválidas"
+}
+```
+
 ### Get User by ID
 - **URL:** `/api/usuarios/:id`
 - **Method:** GET

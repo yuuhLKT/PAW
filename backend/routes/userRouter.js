@@ -24,6 +24,22 @@ function userRouter() {
         }
     });
 
+    router.post('/login', async (req, res) => {
+        try {
+            const { email, senha } = req.body;
+            const user = await User.findOne({ email, senha });
+            if (user){
+                res.status(200).json({
+                    message: 'Usuário habilitado a logar',
+                });
+            } else {
+                res.status(401).json({ error: 'Credenciais inválidas' });
+            }
+        } catch (error) {
+            res.status(401).json({ error: 'Credenciais inválidas' });
+        }
+    });
+
     router.get('/:id', async (req, res) => {
         try {
             const user = await User.findById(req.params.id);
