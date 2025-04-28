@@ -1,7 +1,21 @@
 <div class="message-container">
   <div class="message-header">
     <div class="user-info">
-      <img [src]="currentUser?.imagem || '/images/padrao.png'" [alt]="currentUser?.nome" class="user-avatar">
+      <label for="image-upload" class="image-upload-label">
+        <img
+          [src]="getImageUrl(currentUser?.imagem || '/images/padrao.png')"
+          [alt]="currentUser?.nome"
+          class="user-avatar"
+          (error)="onImageError($event)"
+        >
+      </label>
+      <input
+        type="file"
+        id="image-upload"
+        accept="image/*"
+        (change)="onImageSelected($event)"
+        style="display: none"
+      >
       <span class="user-name">{{ currentUser?.nome }}</span>
     </div>
     <button (click)="logout()" class="logout-button">Logout</button>
