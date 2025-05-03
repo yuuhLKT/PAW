@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "start": "npm run docker:up && npm run install-deps && concurrently \"node backend/server.js\" \"cd frontend && ng serve\"",
-    "dev": "npm run docker:up && npm run install-deps && concurrently \"nodemon backend/server.js\" \"cd frontend && ng serve\"",
+    "dev": "npm run docker:up && npm run install-deps && concurrently \"node backend/server.js\" \"cd frontend && ng serve\"",
+    "dev:mongo": "npm run install-deps && concurrently \"node backend/server.js\" \"cd frontend && ng serve\"",
     "install-deps": "cd frontend && npm install",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"

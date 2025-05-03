@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterModule, Router } from '@angular/router';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { Router, RouterModule } from '@angular/router';
 import { LocalStorageService } from '../services/local-storage.service';
 
 @Component({
@@ -20,7 +20,7 @@ export class LoginComponent {
     private router: Router,
     private localStorage: LocalStorageService,
     private http: HttpClient
-  ) {}
+  ) { }
 
   onSubmit() {
     const payload = {
@@ -35,6 +35,7 @@ export class LoginComponent {
         this.router.navigate(['/message']);
       },
       error: (error) => {
+        alert('Email ou senha inválidos');
         console.error('Login failed:', error);
       }
     });

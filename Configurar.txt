@@ -1,0 +1,44 @@
+# Configuração do Projeto PAW
+
+## Pré-requisitos
+1. Node.js instalado
+2. MongoDB instalado localmente
+3. Docker e Docker Compose instalados
+
+## Passo a Passo
+
+### 1. Configurando o MongoDB
+1. Coloque o comando no powershell:
+```
+& "C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" --dbpath "C:\Users\yuril\Downloads\PAW\backend\models\data\db"
+```
+2. Caso seja CMD:
+```
+"C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" --dbpath "C:\Users\yuril\Downloads\PAW\backend\models\data\db"
+```
+
+No lugar do "C:\Program Files\MongoDB\Server\8.0\bin\mongod.exe" coloque o caminho relativo do seu mongod
+
+No lugar do "C:\Users\yuril\Downloads\PAW\backend\models\data\db" coloque o caminho relativo da pasta 'db' dentro da pasta 'models' que está dentro da pasta 'backend' do projeto
+
+### 2. Instalando as dependências
+1. Instalar as dependências
+```
+npm install
+```
+** TENHA CERTEZA QUE ESTÁ NA RAIZ DO PROJETO **
+
+### 3. Execução do Projeto
+Para rodar o projeto com MongoDB local, use:
+```
+npm run dev:mongo
+```
+
+Para rodar com Docker:
+```
+npm run dev
+```
+
+## Acessos
+- Frontend: http://localhost:4200
+- Backend: http://localhost:3000
