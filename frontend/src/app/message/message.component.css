@@ -62,6 +62,9 @@
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 .message-user {
@@ -208,4 +211,66 @@
 
 .cancel-button:hover {
   background-color: #da190b;
+}
+
+.message-type-selector {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.message-type-selector label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.message-type-selector input[type="radio"] {
+  margin: 0;
+}
+
+.message-input-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.input-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.message-type-selector-below {
+  width: 100%;
+  justify-content: flex-start;
+  margin-top: 0.25rem;
+}
+
+/* Estilos para o box da mensagem conforme o tipo */
+.message-content-type-message {
+  background-color: #232527;
+}
+
+.message-content-type-alert {
+  background-color: #3a0000;
+}
+
+.message-content-type-info {
+  background-color: #2d2d00;
+}
+
+/* Ajuste para texto mais legível em alert/info */
+.message-content-type-alert p,
+.message-content-type-info p {
+  color: #fff;
+}
+
+/* Remover estilos antigos de .message-type-message, .message-type-alert, .message-type-info */
+.message-type-message,
+.message-type-alert,
+.message-type-info {
+  background: none;
+  border: none;
 }

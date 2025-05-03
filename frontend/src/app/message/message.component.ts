@@ -1,9 +1,10 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { interval, Subscription } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 import { LocalStorageService } from '../services/local-storage.service';
 
 interface MessageUser {
@@ -19,14 +20,15 @@ interface Message {
   user: MessageUser;
   isEditing?: boolean;
   editedContent?: string;
+  type: 'message' | 'alert' | 'info';
 }
 
 interface User {
   _id: string;
   nome: string;
   email: string;
-  senha: string;
   imagem: string;
+  token: string;
 }
 
 @Component({
@@ -39,44 +41,51 @@ interface User {
 export class MessageComponent implements OnInit, OnDestroy {
   messages: Message[] = [];
   newMessage: string = '';
+  selectedMessageType: 'message' | 'alert' | 'info' = 'message';
   currentUser: User | null = null;
   private apiUrl = 'http://localhost:3000';
   userCache: { [key: string]: MessageUser } = {};
   private pollingSubscription?: Subscription;
+  private userSubscription?: Subscription;
 
   constructor(
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object,
+    private authService: AuthService,
     private localStorage: LocalStorageService,
     private http: HttpClient
   ) { }
 
   ngOnInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      const userData = localStorage.getItem('userConnected');
-      if (userData) {
-        this.currentUser = JSON.parse(userData);
-        this.loadMessages();
-
-        // Iniciar polling a cada 3 segundos
-        this.pollingSubscription = interval(3000).subscribe(() => {
-          this.loadMessages();
-        });
-      } else {
-        this.router.navigate(['/login']);
-      }
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
     }
+
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+
+    this.loadMessages();
+
+    // Iniciar polling a cada 3 segundos
+    this.pollingSubscription = interval(3000).subscribe(() => {
+      this.loadMessages();
+    });
   }
 
   ngOnDestroy() {
-    // Limpar a subscription quando o componente for destruído
     if (this.pollingSubscription) {
       this.pollingSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
   loadMessages() {
-    this.http.get(`${this.apiUrl}/api/mensagens`)
+    this.http.get(`${this.apiUrl}/api/mensagens`, {
+      headers: this.authService.getAuthHeaders()
+    })
       .subscribe({
         next: async (response: any) => {
           const messagesPromises = response.map(async (msg: any) => {
@@ -84,7 +93,9 @@ export class MessageComponent implements OnInit, OnDestroy {
 
             if (!user) {
               try {
-                const userData: any = await this.http.get(`${this.apiUrl}/api/usuarios/${msg.autorId}`).toPromise();
+                const userData: any = await this.http.get(`${this.apiUrl}/api/usuarios/${msg.autorId}`, {
+                  headers: this.authService.getAuthHeaders()
+                }).toPromise();
                 user = {
                   _id: userData._id,
                   nome: userData.nome,
@@ -105,7 +116,8 @@ export class MessageComponent implements OnInit, OnDestroy {
               id: msg._id,
               content: msg.texto,
               timestamp: new Date(),
-              user: user
+              user: user,
+              type: msg.type || 'message'
             };
           });
 
@@ -113,6 +125,9 @@ export class MessageComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Error loading messages:', error);
+          if (error.status === 401) {
+            this.authService.logout();
+          }
           alert('Erro ao carregar mensagens');
         }
       });
@@ -134,10 +149,13 @@ export class MessageComponent implements OnInit, OnDestroy {
     if (this.newMessage.trim() && this.currentUser?._id) {
       const messageData = {
         texto: this.newMessage,
-        autorId: this.currentUser._id
+        autorId: this.currentUser._id,
+        type: this.selectedMessageType
       };
 
-      this.http.post(`${this.apiUrl}/api/mensagens`, messageData)
+      this.http.post(`${this.apiUrl}/api/mensagens`, messageData, {
+        headers: this.authService.getAuthHeaders()
+      })
         .subscribe({
           next: (response: any) => {
             this.messages.push({
@@ -148,12 +166,16 @@ export class MessageComponent implements OnInit, OnDestroy {
                 _id: this.currentUser!._id,
                 nome: this.currentUser!.nome,
                 imagem: this.currentUser!.imagem || '/images/padrao.png'
-              }
+              },
+              type: response.type || 'message'
             });
             this.newMessage = '';
           },
           error: (error) => {
             console.error('Error sending message:', error);
+            if (error.status === 401) {
+              this.authService.logout();
+            }
             alert('Erro ao enviar mensagem');
           }
         });
@@ -161,10 +183,7 @@ export class MessageComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.removeItem('userConnected');
-    }
-    this.router.navigate(['/login']);
+    this.authService.logout();
   }
 
   onImageSelected(event: Event) {
@@ -206,6 +225,8 @@ export class MessageComponent implements OnInit, OnDestroy {
     if (message.editedContent?.trim()) {
       this.http.put(`${this.apiUrl}/api/mensagens/${message.id}`, {
         texto: message.editedContent
+      }, {
+        headers: this.authService.getAuthHeaders()
       }).subscribe({
         next: () => {
           message.content = message.editedContent!;
@@ -222,7 +243,9 @@ export class MessageComponent implements OnInit, OnDestroy {
 
   deleteMessage(message: Message) {
     if (confirm('Tem certeza que deseja excluir esta mensagem?')) {
-      this.http.delete(`${this.apiUrl}/api/mensagens/${message.id}`)
+      this.http.delete(`${this.apiUrl}/api/mensagens/${message.id}`, {
+        headers: this.authService.getAuthHeaders()
+      })
         .subscribe({
           next: () => {
             this.messages = this.messages.filter(m => m.id !== message.id);

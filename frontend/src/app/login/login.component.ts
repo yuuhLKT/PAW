@@ -1,43 +1,36 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
-import { LocalStorageService } from '../services/local-storage.service';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, HttpClientModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   email: string = '';
-  password: string = '';
+  senha: string = '';
+  error: string = '';
 
   constructor(
-    private router: Router,
-    private localStorage: LocalStorageService,
-    private http: HttpClient
+    private authService: AuthService,
+    private router: Router
   ) { }
 
   onSubmit() {
-    const payload = {
-      email: this.email,
-      senha: this.password
-    };
-
-    this.http.post<any>('http://localhost:3000/api/usuarios/login', payload).subscribe({
-      next: (response) => {
-        console.log('Login successful:', response);
-        this.localStorage.setItem('userConnected', response.user);
-        this.router.navigate(['/message']);
-      },
-      error: (error) => {
-        alert('Email ou senha inválidos');
-        console.error('Login failed:', error);
-      }
-    });
+    this.authService.login(this.email, this.senha)
+      .subscribe({
+        next: () => {
+          this.router.navigate(['/message']);
+        },
+        error: (error) => {
+          this.error = 'Email ou senha inválidos';
+          console.error('Login error:', error);
+        }
+      });
   }
 }

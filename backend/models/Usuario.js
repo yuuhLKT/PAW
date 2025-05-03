@@ -19,9 +19,9 @@ const UsuarioSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    token: {
-        type: String,
-        required: false,
+    admin: {
+        type: Boolean,
+        default: false
     }
 })
 

@@ -32,7 +32,7 @@
         >
         <span class="user-name">{{ message.user.nome }}</span>
       </div>
-      <div class="message-content">
+      <div class="message-content" [ngClass]="'message-content-type-' + message.type">
         <div *ngIf="!message.isEditing">
           <p>{{ message.content }}</p>
           <span class="message-time">{{ message.timestamp | date:'short' }}</span>
@@ -61,13 +61,29 @@
     </div>
   </div>
 
-  <div class="message-input">
-    <input
-      type="text"
-      [(ngModel)]="newMessage"
-      placeholder="Type your message..."
-      (keyup.enter)="sendMessage()"
-    >
-    <button (click)="sendMessage()">Enviar</button>
+  <div class="message-input message-input-vertical">
+    <div class="input-row">
+      <input
+        type="text"
+        [(ngModel)]="newMessage"
+        placeholder="Digite sua mensagem..."
+        (keyup.enter)="sendMessage()"
+      >
+      <button (click)="sendMessage()">Enviar</button>
+    </div>
+    <div class="message-type-selector message-type-selector-below">
+      <label>
+        <input type="radio" [(ngModel)]="selectedMessageType" value="message" checked>
+        Mensagem
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="selectedMessageType" value="alert">
+        Alerta
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="selectedMessageType" value="info">
+        Informação
+      </label>
+    </div>
   </div>
 </div>
