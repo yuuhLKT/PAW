@@ -263,7 +263,8 @@
 
 /* Ajuste para texto mais legível em alert/info */
 .message-content-type-alert p,
-.message-content-type-info p {
+.message-content-type-info p,
+.message-content-type-message p {
   color: #fff;
 }
 
